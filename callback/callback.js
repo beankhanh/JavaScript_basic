@@ -1,58 +1,101 @@
 const callback = (error, data)=>{
-    if(!error){
+    if(error){
         console.log('callling callback with error',error)
     }
-    if(!data){
-        console.log('callling callback with error',data)
+    if(data){
+        console.log('callling callback with data',data)
     }
 };
 
-function getTodos(callback){
-    var request = new XMLHttpRequest();
-    request.onreadystatechange = function() {
+function getTodos(id){
+    return new Promise((resolve, reject)=>{
+        var request = new XMLHttpRequest();
+        request.onreadystatechange = function() {
         if(this.readyState === 4 && request.status ===200){
-            const data = request.responseText;
-            console.log(data);
-            callback(undefined, data)
+             const data = JSON.parse(request.responseText);
+            // const dataString = JSON.stringify(data);
+            // callback(undefined, data)
+            // callback(undefined, dataString)
+            resolve(data)
         }
         if(this.readyState === 4 && request.status!==200){
-            callback('Something wrong', undefined)
+            reject('Something wrong')
         }
         
     } 
 
-    console.log(request);
-    request.open('GET', 'https://dummyjson.com/todos', true)
+    request.open('GET', `https://jsonplaceholder.typicode.com/todos/${id}`, true)
     request.send();
-
+    })
+    
 }
-console.log(1)
-console.log(2)
-getTodos(callback)
-console.log(3)
-console.log(4)
+getTodos(1).then(
+    data=>{
+        console.log('get data:',data)
+        getTodos(2).then(
+            data=>{
+                console.log('get data:',data)
+                getTodos(3).then(
+                    data=>{
+                        console.log('get data:',data)
+                    }
+                ).caches(
+                    err=>{
+                        console.log(err)
+                    }
+                )
+            }
+        ).caches(
+            err=>{
+                console.log(err)
+            }
+        )
+    }
+).caches(
+    err=>{
+        console.log(err)
+    }
+)
 
-
-// function getTodos(callback) {
-//     var request = new XMLHttpRequest();
-
-//     request.onreadystatechange = function () {
-//         if (this.readyState === 4 && request.status === 200) {
-//             const data = request.responseText;
-//             console.log(data);
-//             callback(undefined, data);
+//callback hell
+// getTodos(1, (error,data)=>{
+//     if(error){
+//         console.log('callling callback with error',error)
+//     }
+//     if(data){
+//         console.log('callling callback with data',data)
+//     }
+//     getTodos(2, (error,data)=>{
+//         if(error){
+//             console.log('callling callback with error',error)
 //         }
-//         if (this.readyState === 4 && request.status !== 200) {
-//             callback('Something wrong', undefined);
+//         if(data){
+//             console.log('callling callback with data',data)
 //         }
-//     };
+//         getTodos(3,(error,data)=>{
+//             if(error){
+//                 console.log('callling callback with error',error)
+//             }
+//             if(data){
+//                 console.log('callling callback with data',data)
+//             }
+//         })
+//     })
+// })
 
-//     request.open('GET', 'https://dummyjson.com/todos', true);
-//     request.send();
+// const promisesExp = ()=>{
+//     return new Promise((resolve,reject)=>{
+//         //resolve({name:'khánh',age:'23'})
+//         reject('somthing wrongs')
+//     })
 // }
+//  promisesExp().then(
+//     data=>{
+//         console.log(data)
+//     }
+//  ).catch(
+//     error=>{
+//         console.log(error)
+//     }
+//  )
 
-// console.log(1);
-// console.log(2);
-// getTodos(callback);
-// console.log(3);
-// console.log(4);
